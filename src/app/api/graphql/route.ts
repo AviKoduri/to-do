@@ -37,7 +37,7 @@ const handler = startServerAndCreateNextHandler(server, {
     const token = req.headers.get("authorization")
       ? req.headers.get("authorization").split(" ")[1]
       : null;
-    let role = "ADMIN";
+    let role = "USER";
     let id = "1";
     if (token) {
       //@ts-ignore

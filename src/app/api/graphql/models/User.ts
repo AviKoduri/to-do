@@ -39,9 +39,13 @@ export const User = mercury.createModel("User", {
     type: "date",
     required: false
   },
-  otp:{
-    type:"string",
-    require:true
-  },
+  // otp:{
+  //   type:"string",
+  //   require:true
+  // },
+  isVerfied : {
+    type : "boolean",
+    default : false
+  }
   
 });
