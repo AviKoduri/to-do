@@ -34,19 +34,19 @@ export default {
         const existingUser = await userSchema.mongoModel.findOne({
           email: signUpData.email,
         });
-        console.log(existingUser,"existing User");
-        
+        console.log(existingUser, "existing User");
+
         if (existingUser) throw new GraphQLError("User Already Exists");
         const newUser = await userSchema.mongoModel.create({
           firstName: signUpData.firstName,
           lastName: signUpData.lastName,
           userName: signUpData.userName,
           email: signUpData.email,
-          password : signUpData.password,
-          role : signUpData.role
+          password: signUpData.password,
+          role: signUpData.role,
         });
-        console.log(newUser,"new Usser");
-        
+        console.log(newUser, "new Usser");
+
         // const otp = generateVerificationCode();
         // console.log(otp);
 
@@ -67,34 +67,37 @@ export default {
     ) => {
       try {
         const UserSchema = mercury.db.User;
-        const user = await UserSchema.mongoModel.findOne({
-          email,
-        });
+
+        const user = await UserSchema.mongoModel.findOne({ email });
+
+        if (!user) {
+          throw new GraphQLError("User not found. Please sign up.");
+        }
+
+        const isPasswordValid = await user.verifyPassword(password);
+        if (!isPasswordValid) {
+          throw new GraphQLError("Invalid password.");
+        }
+
         const token = jwt.sign(
           { id: user.id, email: user.email, role: user.role },
           process.env.SECRET_TOKEN_KEY!,
           { expiresIn: "30d" }
         );
-        if (!user) {
-          throw new Error("Invalid  username and/or email");
-        }
-        const isPasswordValid = await user.verifyPassword(password);
-        if (!isPasswordValid) {
-          throw new Error("Invalid password");
-        }
+
         return {
           msg: "User successfully logged in",
           user: user,
           token: token,
         };
       } catch (error: any) {
-        throw new GraphQLError(error);
-      }
-    },
+        throw new GraphQLError(error.message);
+      }
+    },
   },
 };
 
-async function sendVerificationEmail(email:string, otp:string) {
+async function sendVerificationEmail(email: string, otp: string) {
   const transporter = getTransporter();
   const mailOptions = {
     from: "shashanksonwane305@gmail.com",
@@ -103,9 +106,8 @@ async function sendVerificationEmail(email:string, otp:string) {
     text: `Click the following link to verify your email: ${otp}`,
   };
 
-  
-  const info = await transporter.sendMail(mailOptions)
+  const info = await transporter.sendMail(mailOptions);
 }
 function generateVerificationCode() {
-  return Math.floor(1000 + Math.random() * 9000); 
+  return Math.floor(1000 + Math.random() * 9000);
 }
