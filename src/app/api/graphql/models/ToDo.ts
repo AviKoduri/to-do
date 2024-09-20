@@ -20,5 +20,9 @@ export const ToDo = mercury.createModel("ToDo", {
   dueDate: {
     type: "date",
   },
+  user:{
+    type:"relationship",
+    ref:"User"
+  }
   
 });
