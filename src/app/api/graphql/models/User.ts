@@ -3,17 +3,15 @@ export const User = mercury.createModel("User", {
   firstName: {
     type: "string",
     require: true,
-    unique:true
   },
   lastName: {
     type: "string",
     required: true,
-    unique:true
   },
   userName: {
     type: "string",
     required: true,
-    unique: true,
+    // unique: true,
   },
   email: {
     type: "string",
@@ -43,9 +41,9 @@ export const User = mercury.createModel("User", {
   //   type:"string",
   //   require:true
   // },
-  isVerfied : {
-    type : "boolean",
-    default : false
-  }
+  // isVerfied : {
+  //   type : "boolean",
+  //   default : false
+  // }
   
 });

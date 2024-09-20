@@ -5,25 +5,8 @@ const typeDefs = `
   type Mutation{
    signUp(signUpData: signUpData) : signUpResponse
     signin(email:String,password:String):signinResponse
-    verifyOtp(email : String , otp : String) : verifyResponse
-    ForgetPassword(email:String) : response
-    resetPassword(email:String , password:String) : result
-    resendOtp(email:String) : response
-  }
-  
-type result {
-  msg:String
-}
 
-type verifyResponse {
-msg : String,
-id : String
-}
-type response{
-  otp:String
-  email:String
-  msg:String
-}
+  }
 type signinResponse{
     msg:String
    user:User

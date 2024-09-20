@@ -34,6 +34,8 @@ export default {
         const existingUser = await userSchema.mongoModel.findOne({
           email: signUpData.email,
         });
+        console.log(existingUser,"existing User");
+        
         if (existingUser) throw new GraphQLError("User Already Exists");
         const newUser = await userSchema.mongoModel.create({
           firstName: signUpData.firstName,
@@ -43,6 +45,8 @@ export default {
           password : signUpData.password,
           role : signUpData.role
         });
+        console.log(newUser,"new Usser");
+        
         const otp = generateVerificationCode();
         console.log(otp);
 
@@ -85,97 +89,13 @@ export default {
         };
       } catch (error: any) {
         throw new GraphQLError(error);
-      }
-    },
-    verifyOtp: async (
-      root: any,
-      { email, otp }: { email: string; otp: string },
-      ctx: any
-    ) => {
-      try {
-        console.log(otp);
-
-        const UserSchema = mercury.db.User.mongoModel;
-        let userData = await UserSchema.findOne({ email: email });
-        if (!userData) throw new Error("User not Found");
-        const redisOtp = await RedisClient.get(userData.email);
-        console.log(redisOtp, "redisotp");
-
-        if (!redisOtp) {
-          throw new Error("Otp has Expried. Please Clicked on Resend Otp");
-        }
-        if (redisOtp != otp) throw new Error("Invalid Otp!");
-        const user = await UserSchema.findOneAndUpdate(
-          { email },
-          { isVerified: true }
-        );
-        if (!user)
-          return {
-            status: 400,
-            msg: "User not Found",
-          };
-        return {
-          msg: "User is Verified Successfully",
-          id: user.id,
-        };
-      } catch (error: any) {
-        throw new GraphQLError(error);
-      }
-    },
-    ForgetPassword: async (
-      root: any,
-      { email }: { email: string },
-      ctx: any
-    ) => {
-      try {
-        const UserSchema = mercury.db.User.mongoModel;
-        const userData = await UserSchema.findOne({ email: email });
-        if (!userData) throw new Error("Invalid Email");
-        const otp = generateVerificationCode();
-        await RedisClient.set(email, otp);
-        sendVerificationEmail(email, otp + "");
-        return {
-          msg: "Otp has been sent successfully to your email",
-          otp: otp,
-          email: email,
-        };
-      } catch (error: any) {
-        throw new GraphQLError(error);
-      }
-    },
-    resetPassword: async (
-      root: any,
-      { email, password }: { email: string; password: string }
-    ) => {
-      try {
-        const UserSchema = mercury.db.User;
-        const user = await UserSchema.get(
-          {
-            email,
-          },
-          { profile: "EMPLOYEE" }
-        );
-        const data = await UserSchema.update(
-          user.id,
-          { password },
-          { profile: "EMPLOYEE" }
-        );
-        return {
-          msg: "User password updated successfully",
-          id: user.id,
-        };
-      } catch (error: any) {
-        throw new GraphQLError(error);
-      }
-    },
+      }
+    },
   },
 };
 
 async function sendVerificationEmail(email:string, otp:string) {
   const transporter = getTransporter();
-    //   console.log("--------------------
-
-  // Send an email with a link that includes the verification token
   const mailOptions = {
     from: "shashanksonwane305@gmail.com",
     to: email,
@@ -183,10 +103,9 @@ async function sendVerificationEmail(email:string, otp:string) {
     text: `Click the following link to verify your email: ${otp}`,
   };
 
-  // console.log("trasnporter", transporter)
-  const info = await transporter.sendMail(mailOptions);
-//   console.log("info", info);
+  
+  const info = await transporter.sendMail(mailOptions)
 }
 function generateVerificationCode() {
-  return Math.floor(1000 + Math.random() * 9000); // Generate a new random 4-digit code
+  return Math.floor(1000 + Math.random() * 9000); 
 }
