@@ -47,15 +47,15 @@ export default {
         });
         console.log(newUser,"new Usser");
         
-        const otp = generateVerificationCode();
-        console.log(otp);
+        // const otp = generateVerificationCode();
+        // console.log(otp);
 
-        await RedisClient.set(signUpData.email, otp);
-        sendVerificationEmail(signUpData.email, otp + "");
+        // await RedisClient.set(signUpData.email, otp);
+        // sendVerificationEmail(signUpData.email, otp + "");
         return {
           id: newUser.id,
           msg: "User Registered Successfully",
-          otp: otp,
+          // otp: otp,
         };
       } catch (error: any) {
         throw new GraphQLError(error);
