@@ -1,9 +1,9 @@
-import LoginContainer from '@/container/loginContainer'
+import LoginForm from '@/container/loginContainer'
 import React from 'react'
 
 function page() {
   return (
-    <div><LoginContainer/></div>
+    <div><LoginForm/></div>
   )
 }
 
